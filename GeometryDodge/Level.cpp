@@ -253,11 +253,11 @@ void Level::update(float dt)
 		gameState->setCurrentState(State::GAMEOVER);
 	}*/
 
-	/*if (asteroidSpawnTime >= 1.0f)
+	if (asteroidSpawnTime >= 1.0f)
 	{
 		spawnNewAsteroid();
 		asteroidSpawnTime = 0.0f;
-	}*/
+	}
 
 	//checkCollisions();
 
@@ -268,6 +268,9 @@ void Level::update(float dt)
 		uidMsg = ui->packUIData();
 		pdMsg = player1->packPlayerData(totalGameTime);
 
+		// Clear the old data from the lsit and repopulate with latest data
+		asteroidMsgsList.clear();
+
 		for (int i = 0; i < asteroids.size(); i++)
 		{
 			// Create a unique mem addr for this data
@@ -275,14 +278,16 @@ void Level::update(float dt)
 			// Fill this mem address with the latest asteroid data
 			*asterDataMsg = *asteroids[i]->packAsteroidData(totalGameTime, i);
 
+			
+			
 			// Add this to the vec of asteroid positional data
 			asteroidMsgsList.push_back(asterDataMsg);
 
-			// Only keep the lastest 5 asteroid data
-			if (asteroidMsgsList.size() > 5)
+			// Only keep the lastest asteroid data msg for each asteroid
+			/*if (asteroidMsgsList.size() > 1)
 			{
 				asteroidMsgsList.pop_front();
-			}
+			}*/
 
 			// Check to see if we have a msg for each asteroid, if we don't a new asteroid must have spawned
 			// So repack all the data to include the newly spawned asteroid

@@ -112,7 +112,7 @@ void NetworkManager::send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Pac
 
 			AsteroidDataMsg* asteroidMsg = asteroidsPckt.asteroidDataMsgs[i];
 
-			std::cout << "\n############### ASTEROID " << asteroidsPckt.asteroidDataMsgs[i]->asteroidID << " MSG " << i << " DATA ###############\n\n";
+			std::cout << "\n############### ASTEROID " << asteroidsPckt.asteroidDataMsgs[i]->asteroidID << " MSG DATA ###############\n\n";
 
 			if (client.send(asteroidMsg, sizeof(AsteroidDataMsg), bytesSent) != sf::Socket::Done)
 			{
@@ -129,7 +129,7 @@ void NetworkManager::send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Pac
 						  << "Bytes sent " << bytesSent << "\n";
 			}
 
-			std::cout << "\n############### ASTEROID " << asteroidsPckt.asteroidDataMsgs[i]->asteroidID << " MSG " << i << " DATA END ###############\n";
+			std::cout << "\n############### ASTEROID " << asteroidsPckt.asteroidDataMsgs[i]->asteroidID << " MSG DATA END ###############\n";
 		}
 	}
 }
