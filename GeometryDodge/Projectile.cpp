@@ -5,8 +5,8 @@
 Projectile::Projectile(sf::RenderWindow* hwnd, sf::Vector2f spawnPos) : window(hwnd), spawnPosition(spawnPos)
 {
 	velocity = sf::Vector2f(0.0f, -10.0f);
-	/*randXPos = rand() % 1180 + 50;
-	randYPos = 20.0f;*/
+
+	projectileMsg = new ProjectileDataMsg;
 
 	initProjectile();
 }
@@ -16,21 +16,15 @@ Projectile::~Projectile()
 
 }
 
-//GameWorldData Projectile::networkUpdate(float dt, int projectileID)
-//{
-//	return packAsteroidData(dt, asteroidID);
-//}
-//
-//GameWorldData Projectile::packProjectileData(float dt, int projectileID)
-//{
-//	totalGameTime += dt;
-//	gwdMsg.asteroidID = asteroidID;
-//	gwdMsg.timeSent = totalGameTime;
-//	gwdMsg.x = projectileSprite.getPosition().x;
-//	gwdMsg.y = projectileSprite.getPosition().y;
-//
-//	return gwdMsg;
-//}
+ProjectileDataMsg* Projectile::packProjectileData(float totalGameTime, int projectileID)
+{
+	projectileMsg->projectileID = projectileID;
+	projectileMsg->timeSent = totalGameTime;
+	projectileMsg->x = projectileSprite.getPosition().x;
+	projectileMsg->y = projectileSprite.getPosition().y;
+
+	return projectileMsg;
+}
 
 bool Projectile::update(float dt)
 {

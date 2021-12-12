@@ -9,6 +9,7 @@
 #include "UIDataMsg.h"
 #include "Player_UI_Data_Packet.h"
 #include "Asteroids_Data_Packet.h"
+#include "Projectiles_Data_Packet.h"
 #include <list>
 
 class Level : public Screen
@@ -69,13 +70,15 @@ private:
 	PlayerDataMsg* pdMsg;
 	// For sending UI data
 	UIDataMsg* uidMsg;
-	// For ease of controlling amount of data
+	// For ease of controlling amount of asteroid data
 	std::list<AsteroidDataMsg*> asteroidMsgsList;
+	std::list<ProjectileDataMsg*> projectileMsgsList;
 	// For sending
 	//std::vector<AsteroidDataMsg*> asteroidMsgsVec;
 
 	Player_UI_Data_Packet playerUIpckt;
 	Asteroids_Data_Packet asteroidsPckt;
+	Projectiles_Data_Packet projectilesPckt;
 
 	//int playerScore;
 	bool isDebugMode;

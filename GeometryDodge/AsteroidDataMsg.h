@@ -5,7 +5,7 @@ struct AsteroidDataMsg
 	// An ID number associated with the corrosponding asteroid
 	int asteroidID;
 
-	// The velocity data of this asteroid
+	// The positional data of this asteroid
 	float x;
 	float y;
 

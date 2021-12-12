@@ -9,6 +9,7 @@
 #include "UIDataMsg.h"
 #include "Asteroids_Data_Packet.h"
 #include "Player_UI_Data_Packet.h"
+#include "Projectiles_Data_Packet.h"
 
 class NetworkManager
 {
@@ -18,7 +19,7 @@ public:
 
 	void createTCPListner();
 	void acceptConnections();
-	void send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Packet asteroidsPckt);
+	void send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Packet asteroidsPckt, Projectiles_Data_Packet projcetilesPckt);
 
 private:
 	//sf::IpAddress SERVERIP = "127.0.0.1";

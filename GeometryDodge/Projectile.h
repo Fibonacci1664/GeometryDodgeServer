@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "ProjectileDataMsg.h"
 
 class Projectile
 {
@@ -7,8 +8,7 @@ public:
 	Projectile(sf::RenderWindow* hwnd, sf::Vector2f spawnPos);
 	~Projectile();
 
-	/*GameWorldData networkUpdate(float dt, int asteroidID);
-	GameWorldData packProjectileData(float dt, int asteroidID);*/
+	ProjectileDataMsg* packProjectileData(float dt, int asteroidID);
 	bool update(float dt);
 	void render(sf::RenderWindow* window);
 	sf::Sprite* getProjectileSprite();
@@ -30,8 +30,6 @@ private:
 	sf::FloatRect projectileCollisionBox;
 
 	sf::Vector2f spawnPosition;
-	float randSpeed;		// Add this later if the MVP works
-	int randXPos;
-	int randYPos;
 	float totalGameTime = 0.0f;
+	ProjectileDataMsg* projectileMsg;
 };

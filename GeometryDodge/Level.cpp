@@ -11,7 +11,6 @@ Level::Level(sf::RenderWindow* hwnd, Input* in, GameState* gs) : Screen(hwnd, in
 
 	playerUIpckt.uiData = *uidMsg;
 	playerUIpckt.playerData = *pdMsg;
-	//gdpckt.asteroidData = *asteroidMsgs[0];
 
 	if (isDebugMode)
 	{
@@ -165,7 +164,7 @@ void Level::updateAsteroids(float dt)
 		// If this is true then it means an asteroid went out the btm of the screen, so remove it from the vec
 		if (oob)
 		{
-			std::cout << "Update - Asteroid vector size is " << asteroids.size() << '\n';
+			//std::cout << "Update Call - Aseroid OOB - Erasing Asteroid - Vector size is currently: " << asteroids.size() << '\n';
 
 			// Create an iterator to the asteroid that has gone oob, as the asteroids all fall at the same speed
 			// it will always be the first in the list
@@ -180,7 +179,7 @@ void Level::updateAsteroids(float dt)
 			// Decrement the player score
 			player1->setPlayerScore(player1->getPlayerScore() - 1);
 
-			std::cout << "Update - Asteroid vector size is now " << asteroids.size() << '\n';
+			//std::cout << "Update Call - Asteroid erased - Vector size is now: " << asteroids.size() << '\n';
 		}
 	}
 }
@@ -195,7 +194,7 @@ void Level::updateProjectiles(float dt)
 		// If this is true then it means an projectile went out the top of the screen, so remove it from the vec
 		if (oob)
 		{
-			std::cout << "Update - Projectile vector size is " << projectiles.size() << '\n';
+			//std::cout << "Update Call - Projectile OOB - Erasing Projectile - Vector size is currently: " << projectiles.size() << '\n';
 
 			// Create an iterator to the asteroid that has gone oob, as the asteroids all fall at the same speed
 			// it will always be the first in the list
@@ -207,7 +206,7 @@ void Level::updateProjectiles(float dt)
 			auto iter2 = projectileColBoxes.begin();
 			projectileColBoxes.erase(iter2);
 
-			std::cout << "Update - Projectile vector size is now " << projectiles.size() << '\n';
+			//std::cout << "Update Call - Projectile erased - Vector size is now: " << projectiles.size() << '\n';
 		}
 	}
 }
@@ -245,7 +244,7 @@ void Level::update(float dt)
 	ui->update(dt, player1->getPlayerScore());
 	player1->update(dt);
 	updateAsteroids(dt);
-	//updateProjectiles(dt);
+	updateProjectiles(dt);
 	updateDebugMode();
 
 	/*if (player1->getPlayerScore() < 0)
@@ -259,15 +258,21 @@ void Level::update(float dt)
 		asteroidSpawnTime = 0.0f;
 	}
 
-	//checkCollisions();
+	checkCollisions();
 
 	// ############### NETWORK UPDATE 50ms ###############
-	if (networkUpdateTimer >= 0.1f)
+	if (networkUpdateTimer >= 0.05f)
 	{
 		// Pack data into individual structs
+		// ######### UI #########
 		uidMsg = ui->packUIData();
-		pdMsg = player1->packPlayerData(totalGameTime);
+		// ######### UI END #########
 
+		// ######### PLAYER #########
+		pdMsg = player1->packPlayerData(totalGameTime);
+		// ######### PLAYER END #########
+
+		// ######### ASTEROIDS #########
 		// Clear the old data from the lsit and repopulate with latest data
 		asteroidMsgsList.clear();
 
@@ -278,23 +283,8 @@ void Level::update(float dt)
 			// Fill this mem address with the latest asteroid data
 			*asterDataMsg = *asteroids[i]->packAsteroidData(totalGameTime, i);
 
-			
-			
 			// Add this to the vec of asteroid positional data
 			asteroidMsgsList.push_back(asterDataMsg);
-
-			// Only keep the lastest asteroid data msg for each asteroid
-			/*if (asteroidMsgsList.size() > 1)
-			{
-				asteroidMsgsList.pop_front();
-			}*/
-
-			// Check to see if we have a msg for each asteroid, if we don't a new asteroid must have spawned
-			// So repack all the data to include the newly spawned asteroid
-			/*if (asteroidMsgs.size() != asteroids.size())
-			{
-				asteroidMsgs.push_back(asteroids[i]->packAsteroidData(totalGameTime, i));
-			}*/
 		}
 		
 		// If there are no asteroids in the world, this was needed during testing 1 asteroid only
@@ -302,20 +292,53 @@ void Level::update(float dt)
 		{
 			// Reset the asteroid vec in the asteroid data packet
 			asteroidsPckt.asteroidDataMsgs.clear();
-			asteroidsPckt.asteroidDataMsgSize = 0;
 		}
 		else
 		{
 			asteroidsPckt.asteroidDataMsgs.resize(asteroidMsgsList.size());
 			std::copy(asteroidMsgsList.begin(), asteroidMsgsList.end(), asteroidsPckt.asteroidDataMsgs.begin());	// Copy list into asteroid data packet vec
-			asteroidsPckt.asteroidDataMsgSize = asteroidsPckt.asteroidDataMsgs.size();	// Keep track of how many elements are in this vec, needed for send/recv
 		}
+
+		asteroidsPckt.asteroidDataMsgSize = asteroidsPckt.asteroidDataMsgs.size();	// Keep track of how many elements are in this vec, needed for send/recv
+
+		// ######### ASTEROIDS END #########
+
+		// ######### PROJECTILES #########
+		// Clear the old data from the lsit and repopulate with latest data
+		projectileMsgsList.clear();
+
+		for (int i = 0; i < projectiles.size(); i++)
+		{
+			// Create a unique mem addr for this data
+			ProjectileDataMsg* projDataMsg = new ProjectileDataMsg;
+			// Fill this mem address with the latest projectile data
+			*projDataMsg = *projectiles[i]->packProjectileData(totalGameTime, i);
+
+			// Add this to the vec of projectile positional data
+			projectileMsgsList.push_back(projDataMsg);
+		}
+
+		// If there are no projectiles in the world
+		if (projectiles.size() == 0)
+		{
+			// Reset the projectile vec in the projcetile data packet
+			projectilesPckt.projectileDataMsgs.clear();
+		}
+		else
+		{
+			projectilesPckt.projectileDataMsgs.resize(projectileMsgsList.size());
+			std::copy(projectileMsgsList.begin(), projectileMsgsList.end(), projectilesPckt.projectileDataMsgs.begin());	// Copy list into projectile data packet vec
+		}
+
+		projectilesPckt.projectileDataMsgSize = projectilesPckt.projectileDataMsgs.size();	// Keep track of how many elements are in this vec, needed for send/recv
+
+		// ######### PROJECTILES END #########
 		
 		playerUIpckt.uiData = *uidMsg;
 		playerUIpckt.playerData = *pdMsg;
 
 		// Send ALL data msgs
-		network->send(playerUIpckt, asteroidsPckt);
+		network->send(playerUIpckt, asteroidsPckt, projectilesPckt);
 
 		networkUpdateTimer = 0.0f;
 	}
@@ -345,7 +368,6 @@ void Level::renderDebugMode()
 	if (isDebugMode)
 	{
 		window->draw(player1ColBox);
-		//window->draw(player2ColBox);
 
 		for (int i = 0; i < asteroidColBoxes.size(); ++i)
 		{
@@ -369,7 +391,7 @@ void Level::render()
 	window->draw(*player1->getPlayerSprite());
 
 	renderAsteroids();
-	//renderProjectiles();
+	renderProjectiles();
 
 	renderDebugMode();
 
@@ -397,13 +419,13 @@ void Level::loadTexture()
 void Level::checkCollisions()
 {
 	// If player collides with an asteroid, set GAME_OVER state
-	for (int i = 0; i < asteroids.size(); ++i)
+	/*for (int i = 0; i < asteroids.size(); ++i)
 	{
 		if (player1->getCollisionBox().intersects(asteroids[i]->getCollisionBox()))
 		{
 			gameState->setCurrentState(State::GAMEOVER);
 		}
-	}
+	}*/
 
 	bool asteroidDestroyed = false;
 
@@ -415,7 +437,7 @@ void Level::checkCollisions()
 			if (projectiles[j]->getCollisionBox().intersects(asteroids[i]->getCollisionBox()))
 			{
 				// Destroy the asteroid that was hit
-				std::cout << "Check Collision - Asteroid vector size is " << asteroids.size() << '\n';
+				//std::cout << "Check Collision - Asteroid vector size is " << asteroids.size() << '\n';
 
 				// Create an iterator to the asteroid that has been hit
 				auto iter1 = asteroids.begin() + i;
@@ -426,7 +448,7 @@ void Level::checkCollisions()
 				auto iter2 = asteroidColBoxes.begin() + i;
 				asteroidColBoxes.erase(iter2);
 
-				std::cout << "Check Collision - Asteroid vector size is now " << asteroids.size() << '\n';
+				//std::cout << "Check Collision - Asteroid vector size is now " << asteroids.size() << '\n';
 
 				// Increment the player score
 				player1->setPlayerScore(player1->getPlayerScore() + 1);
