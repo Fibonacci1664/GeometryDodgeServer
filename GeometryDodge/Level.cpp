@@ -247,11 +247,6 @@ void Level::update(float dt)
 	updateProjectiles(dt);
 	updateDebugMode();
 
-	/*if (player1->getPlayerScore() < 0)
-	{
-		gameState->setCurrentState(State::GAMEOVER);
-	}*/
-
 	if (asteroidSpawnTime >= 1.0f)
 	{
 		spawnNewAsteroid();
@@ -286,7 +281,7 @@ void Level::update(float dt)
 			// Add this to the vec of asteroid positional data
 			asteroidMsgsList.push_back(asterDataMsg);
 		}
-		
+
 		// If there are no asteroids in the world, this was needed during testing 1 asteroid only
 		if (asteroids.size() == 0)
 		{
@@ -333,7 +328,7 @@ void Level::update(float dt)
 		projectilesPckt.projectileDataMsgSize = projectilesPckt.projectileDataMsgs.size();	// Keep track of how many elements are in this vec, needed for send/recv
 
 		// ######### PROJECTILES END #########
-		
+
 		playerUIpckt.uiData = *uidMsg;
 		playerUIpckt.playerData = *pdMsg;
 
@@ -342,6 +337,14 @@ void Level::update(float dt)
 
 		networkUpdateTimer = 0.0f;
 	}
+
+	//// Check this last after ALL other sends are complete, this should be the final msg sent before moving to GameOver state
+	//if (player1->getPlayerScore() < 0)
+	//{
+	//	gameState->setCurrentState(State::GAMEOVER);
+	//	// Transmit that it is game over here, as we will not get another chance as level::update will NOT run next frame
+	//	network->sendGameState(int(gameState->getCurrentState()));
+	//}
 }
 
 void Level::renderAsteroids()
@@ -424,6 +427,9 @@ void Level::checkCollisions()
 		if (player1->getCollisionBox().intersects(asteroids[i]->getCollisionBox()))
 		{
 			gameState->setCurrentState(State::GAMEOVER);
+			return;
+			// Transmit that it is game over here, as we will not get another chance as level::update will NOT run next frame
+			//network->sendGameState(int(gameState->getCurrentState()));
 		}
 	}
 

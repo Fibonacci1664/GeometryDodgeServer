@@ -22,6 +22,7 @@ public:
 	void createTCPListner();
 	void acceptConnections();
 	void send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Packet asteroidsPckt, Projectiles_Data_Packet projcetilesPckt);
+	void sendGameState(int gameState);
 
 private:
 	//sf::IpAddress SERVERIP = "127.0.0.1";

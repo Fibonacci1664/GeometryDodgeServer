@@ -212,3 +212,22 @@ void NetworkManager::send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Pac
 		// ###################################### PROJECTILE STUFF END ######################################
 	}
 }
+
+void NetworkManager::sendGameState(int gameState)
+{
+	for (auto it = clientSockets.begin(); it != clientSockets.end(); ++it)
+	{
+		sf::TcpSocket& client = **it;
+
+		if (client.send(&gameState, sizeof(int)) != sf::Socket::Done)
+		{
+			std::cout << "Error sending Game State data from server by TCP!\n";
+			break;
+		}
+
+		if (printDataToConsole)
+		{
+			std::cout << "Game State sent to client, ENUM: " << gameState << '\n';
+		}
+	}
+}
