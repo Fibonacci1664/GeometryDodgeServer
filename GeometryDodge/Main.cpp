@@ -10,6 +10,8 @@
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
 
+bool printDataToConsole = true;
+
 int main()
 {
     std::srand(std::time(nullptr));

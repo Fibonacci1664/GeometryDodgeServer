@@ -48,7 +48,6 @@ void Projectile::initProjectile()
 	size = projectileTexture.getSize();
 	projectileSprite.setOrigin(size.x * 0.5f, size.y * 0.5f);
 	projectileSprite.setPosition(spawnPosition);
-	//projectileSprite.setScale(0.75f, 0.75f);
 	projectileCollisionBox = sf::FloatRect(projectileSprite.getPosition().x - size.x * 0.4f, projectileSprite.getPosition().y - size.y * 0.4f, size.x * 0.8f, size.y * 0.8f);
 }
 

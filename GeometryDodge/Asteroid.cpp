@@ -55,7 +55,6 @@ void Asteroid::initAsteroid()
 	size = asteroidTexture.getSize();
 	asteroidSprite.setOrigin(size.x * 0.5f, size.y * 0.5f);
 	asteroidSprite.setPosition(sf::Vector2f(randXPos, randYPos));
-	//asteroidSprite.setScale(0.75f, 0.75f);
 	velocity = sf::Vector2f(0.0f, 2.5f);
 	collisionBox = sf::FloatRect(asteroidSprite.getPosition().x - size.x * 0.5f, asteroidSprite.getPosition().y - size.y * 0.5f, size.x, size.y);
 }
@@ -70,22 +69,6 @@ void Asteroid::loadTexture()
 
 bool Asteroid::checkScreenBounds()
 {
-	// If we hit the left or right edges of the screen
-	//if ((asteroidSprite.getPosition().x + (size.x * 0.5f) > window->getSize().x && velocity.x > 0) ||
-	//	(asteroidSprite.getPosition().x - (size.x * 0.5f) < 0 && velocity.x < 0))
-	//{
-	//	// Bounce off by negating the current velocity
-	//	velocity.x = -velocity.x;
-	//}
-
-	//// If we hit the top or btm edges of the screen
-	//if ((asteroidSprite.getPosition().y + (size.y * 0.5f) > window->getSize().y && velocity.y > 0) ||
-	//	(asteroidSprite.getPosition().y - (size.y * 0.5f) < 0 && velocity.y < 0))
-	//{
-	//	// Bounce off by negating the current velocity
-	//	velocity.y = -velocity.y;
-	//}
-
 	// If we go out the bottom of the screen
 	if (asteroidSprite.getPosition().y - size.y > window->getSize().y)
 	{

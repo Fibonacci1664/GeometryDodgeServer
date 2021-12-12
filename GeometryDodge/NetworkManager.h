@@ -11,6 +11,8 @@
 #include "Player_UI_Data_Packet.h"
 #include "Projectiles_Data_Packet.h"
 
+extern bool printDataToConsole;
+
 class NetworkManager
 {
 public:

@@ -164,7 +164,10 @@ void Level::updateAsteroids(float dt)
 		// If this is true then it means an asteroid went out the btm of the screen, so remove it from the vec
 		if (oob)
 		{
-			//std::cout << "Update Call - Aseroid OOB - Erasing Asteroid - Vector size is currently: " << asteroids.size() << '\n';
+			if (printDataToConsole)
+			{
+				std::cout << "Update Call - Aseroid OOB - Erasing Asteroid - Vector size is currently: " << asteroids.size() << '\n';
+			}
 
 			// Create an iterator to the asteroid that has gone oob, as the asteroids all fall at the same speed
 			// it will always be the first in the list
@@ -179,7 +182,10 @@ void Level::updateAsteroids(float dt)
 			// Decrement the player score
 			player1->setPlayerScore(player1->getPlayerScore() - 1);
 
-			//std::cout << "Update Call - Asteroid erased - Vector size is now: " << asteroids.size() << '\n';
+			if (printDataToConsole)
+			{
+				std::cout << "Update Call - Asteroid erased - Vector size is now: " << asteroids.size() << '\n';
+			}
 		}
 	}
 }
@@ -194,7 +200,10 @@ void Level::updateProjectiles(float dt)
 		// If this is true then it means an projectile went out the top of the screen, so remove it from the vec
 		if (oob)
 		{
-			//std::cout << "Update Call - Projectile OOB - Erasing Projectile - Vector size is currently: " << projectiles.size() << '\n';
+			if (printDataToConsole)
+			{
+				std::cout << "Update Call - Projectile OOB - Erasing Projectile - Vector size is currently: " << projectiles.size() << '\n';
+			}
 
 			// Create an iterator to the asteroid that has gone oob, as the asteroids all fall at the same speed
 			// it will always be the first in the list
@@ -206,7 +215,10 @@ void Level::updateProjectiles(float dt)
 			auto iter2 = projectileColBoxes.begin();
 			projectileColBoxes.erase(iter2);
 
-			//std::cout << "Update Call - Projectile erased - Vector size is now: " << projectiles.size() << '\n';
+			if (printDataToConsole)
+			{
+				std::cout << "Update Call - Projectile erased - Vector size is now: " << projectiles.size() << '\n';
+			}
 		}
 	}
 }
@@ -419,13 +431,13 @@ void Level::loadTexture()
 void Level::checkCollisions()
 {
 	// If player collides with an asteroid, set GAME_OVER state
-	/*for (int i = 0; i < asteroids.size(); ++i)
+	for (int i = 0; i < asteroids.size(); ++i)
 	{
 		if (player1->getCollisionBox().intersects(asteroids[i]->getCollisionBox()))
 		{
 			gameState->setCurrentState(State::GAMEOVER);
 		}
-	}*/
+	}
 
 	bool asteroidDestroyed = false;
 
@@ -436,9 +448,12 @@ void Level::checkCollisions()
 		{
 			if (projectiles[j]->getCollisionBox().intersects(asteroids[i]->getCollisionBox()))
 			{
-				// Destroy the asteroid that was hit
-				//std::cout << "Check Collision - Asteroid vector size is " << asteroids.size() << '\n';
+				if (printDataToConsole)
+				{
+					std::cout << "Check Collision - Asteroid vector size is " << asteroids.size() << '\n';
+				}
 
+				// Destroy the asteroid that was hit
 				// Create an iterator to the asteroid that has been hit
 				auto iter1 = asteroids.begin() + i;
 				// Erase it from the vector
@@ -448,7 +463,10 @@ void Level::checkCollisions()
 				auto iter2 = asteroidColBoxes.begin() + i;
 				asteroidColBoxes.erase(iter2);
 
-				//std::cout << "Check Collision - Asteroid vector size is now " << asteroids.size() << '\n';
+				if (printDataToConsole)
+				{
+					std::cout << "Check Collision - Asteroid vector size is now " << asteroids.size() << '\n';
+				}
 
 				// Increment the player score
 				player1->setPlayerScore(player1->getPlayerScore() + 1);

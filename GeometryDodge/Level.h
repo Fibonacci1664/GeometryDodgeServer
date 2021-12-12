@@ -12,6 +12,8 @@
 #include "Projectiles_Data_Packet.h"
 #include <list>
 
+extern bool printDataToConsole;
+
 class Level : public Screen
 {
 public:

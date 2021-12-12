@@ -8,7 +8,7 @@ Application::Application(int width, int height) : windowWidth(width), windowHeig
 
 Application::~Application()
 {
-    if (level)
+    /*if (level)
     {
         delete level;
         level = nullptr;
@@ -18,7 +18,7 @@ Application::~Application()
     {
         delete menu;
         menu = nullptr;
-    }
+    }*/
 }
 
 void Application::initWindow()
