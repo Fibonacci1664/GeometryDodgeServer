@@ -37,13 +37,6 @@ protected:
 	Input* input;
 	GameState* gameState;
 
-	// Custom cursor.
-	/*GameObject customCursor;
-	sf::Texture cursorTexture;*/
-
-	// For clicking on UI components
-	bool checkMouseCollisions(sf::RectangleShape* s1, sf::Vector2f s2);
-
 private:
 	// Default functions for rendering to the screen.
 	void beginDraw();

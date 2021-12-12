@@ -12,7 +12,11 @@ UI::UI()
 
 UI::~UI()
 {
-
+	if (UIMsg)
+	{
+		delete UIMsg;
+		UIMsg = nullptr;
+	}
 }
 
 void UI::initUI()

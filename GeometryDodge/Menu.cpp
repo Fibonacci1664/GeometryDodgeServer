@@ -2,7 +2,7 @@
 
 Menu::Menu(sf::RenderWindow* hwnd, Input* in, GameState* gs) : Screen(hwnd, in, gs)
 {
-	initMenu();
+	initGameOver();
 }
 
 Menu::~Menu()
@@ -10,7 +10,7 @@ Menu::~Menu()
 
 }
 
-void Menu::initMenu()
+void Menu::initGameOver()
 {
 	loadTexture();
 	bgTexture.setSmooth(true);
@@ -30,7 +30,7 @@ void Menu::initUI()
 	playGamePrompt.setFillColor(sf::Color::Red);
 	playGamePrompt.setOutlineColor(sf::Color::Black);
 	playGamePrompt.setOutlineThickness(1.0f);
-	playGamePrompt.setPosition(window->getSize().x * 0.33f, window->getSize().y * 0.45f);
+	playGamePrompt.setPosition(window->getSize().x * 0.34f, window->getSize().y * 0.46f);
 }
 
 void Menu::loadFont()

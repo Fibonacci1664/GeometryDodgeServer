@@ -2,11 +2,11 @@
 #include <SFML/Graphics.hpp>
 #include "Screen.h"
 
-class Menu : public Screen
+class GameOver : public Screen
 {
 public:
-	Menu(sf::RenderWindow* hwnd, Input* in, GameState* gs);
-	~Menu();
+	GameOver(sf::RenderWindow* hwnd, Input* in, GameState* gs);
+	~GameOver();
 
 	void handleInput(float dt);
 	void update(float dt);
@@ -22,9 +22,8 @@ private:
 	void loadFont();
 
 	sf::Font font;
-	sf::Text playGamePrompt;
+	sf::Text gameOverText;
 
 	sf::Texture bgTexture;
 	sf::Sprite bgSprite;
 };
-

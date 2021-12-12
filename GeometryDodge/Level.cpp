@@ -20,19 +20,7 @@ Level::Level(sf::RenderWindow* hwnd, Input* in, GameState* gs) : Screen(hwnd, in
 
 Level::~Level()
 {
-	if (player1)
-	{
-		delete player1;
-		player1 = nullptr;
-	}
-
-	if (ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-
-	/*for (int i = 0; i < asteroids.size(); ++i)
+	for (int i = 0; i < asteroids.size(); ++i)
 	{
 		if (asteroids[i])
 		{
@@ -48,7 +36,7 @@ Level::~Level()
 			delete projectiles[i];
 			projectiles[i] = nullptr;
 		}
-	}*/
+	}
 
 	if (network)
 	{
@@ -56,16 +44,16 @@ Level::~Level()
 		network = nullptr;
 	}
 
-	if (pdMsg)
+	if (player1)
 	{
-		delete pdMsg;
-		pdMsg = nullptr;
+		delete player1;
+		player1 = nullptr;
 	}
 
-	if (uidMsg)
+	if (ui)
 	{
-		delete uidMsg;
-		uidMsg = nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
