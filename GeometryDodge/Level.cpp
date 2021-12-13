@@ -1,7 +1,35 @@
+/*
+ * This is the Level class and handles
+ *		- Creating a network manager.
+ *		- Handling rendering of debug collision boxes.
+ *		- Initialising all level components, including:
+ *				*	Background
+ *				*	UI
+ *				*	Player
+ *				*	Asteroids
+ *		- Updating/Spawning level components.
+ *		- Carrying our all collision checks.
+ *		- Sending all game data to the network manager.
+ *
+ * Original @author D. Green.
+ *
+ * © D. Green. 2021.
+ */
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// INCLUDES
 #include "Level.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// CONSTRCUTOR / DESTRUCTOR
 Level::Level(sf::RenderWindow* hwnd, Input* in, GameState* gs) : Screen(hwnd, in, gs)
 {
+	networkUpdateTimer = 0.0f;
+	asteroidSpawnTime = 0.0f;
+	totalGameTime = 0.0f;
+
 	isDebugMode = true;
 
 	uidMsg = new UIDataMsg;
@@ -57,6 +85,9 @@ Level::~Level()
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// FUNCTIONS
 void Level::initLevel()
 {
 	initConnection();	
@@ -66,11 +97,15 @@ void Level::initLevel()
 	initAsteroids();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::initConnection()
 {
 	network = new NetworkManager();
 	network->createTCPListner();
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Level::initDebugMode()
 {
@@ -96,6 +131,8 @@ void Level::initDebugMode()
 	asteroidColBoxes[0].setSize(sf::Vector2f(asteroids[0]->getCollisionBox().width, asteroids[0]->getCollisionBox().height));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::initBackground()
 {
 	loadTexture();
@@ -104,20 +141,28 @@ void Level::initBackground()
 	bgSprite.setScale(5.0f, 2.8125f);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::initUI()
 {
 	ui = new UI;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Level::initPlayer()
 {
 	player1 = new Player(1, window, input);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::initAsteroids()
 {
 	asteroids.push_back(new Asteroid(window));
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Level::spawnNewAsteroid()
 {
@@ -125,11 +170,15 @@ void Level::spawnNewAsteroid()
 	createNewAsteroidColBox();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::spawnNewProjectile()
 {
 	projectiles.push_back(new Projectile(window, player1->getPlayerSprite()->getPosition()));
 	createNewProjectileColBox();
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Level::handleInput(float dt)
 {
@@ -141,6 +190,8 @@ void Level::handleInput(float dt)
 		spawnNewProjectile();
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Level::updateAsteroids(float dt)
 {
@@ -178,6 +229,8 @@ void Level::updateAsteroids(float dt)
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::updateProjectiles(float dt)
 {
 	// Update all the projectiles locally all the time
@@ -211,6 +264,8 @@ void Level::updateProjectiles(float dt)
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::updateDebugMode()
 {
 	if (isDebugMode)
@@ -232,6 +287,8 @@ void Level::updateDebugMode()
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::update(float dt)
 {
 	network->acceptConnections();
@@ -240,7 +297,7 @@ void Level::update(float dt)
 	networkUpdateTimer += dt;
 	totalGameTime += dt;
 
-	// ############### LOCAL UPDATE ###############
+	// ################################################################### LOCAL UPDATE ###################################################################
 	ui->update(dt, player1->getPlayerScore());
 	player1->update(dt);
 	updateAsteroids(dt);
@@ -255,19 +312,21 @@ void Level::update(float dt)
 
 	checkCollisions();
 
-	// ############### NETWORK UPDATE 50ms ###############
+	// ################################################################### LOCAL UPDATE END ###############################################################
+
+	// ################################################################### NETWORK UPDATE 50ms ############################################################
 	if (networkUpdateTimer >= 0.05f)
 	{
 		// Pack data into individual structs
-		// ######### UI #########
+		// ###################################################################### UI ######################################################################
 		uidMsg = ui->packUIData();
-		// ######### UI END #########
+		// ###################################################################### UI END ##################################################################
 
-		// ######### PLAYER #########
+		// ###################################################################### PLAYER ##################################################################
 		pdMsg = player1->packPlayerData(totalGameTime);
-		// ######### PLAYER END #########
+		// ###################################################################### PLAYER END ##############################################################
 
-		// ######### ASTEROIDS #########
+		// ###################################################################### ASTEROIDS ###############################################################
 		// Clear the old data from the lsit and repopulate with latest data
 		asteroidMsgsList.clear();
 
@@ -291,15 +350,15 @@ void Level::update(float dt)
 		else
 		{
 			asteroidsPckt.asteroidDataMsgs.resize(asteroidMsgsList.size());
-			std::copy(asteroidMsgsList.begin(), asteroidMsgsList.end(), asteroidsPckt.asteroidDataMsgs.begin());	// Copy list into asteroid data packet vec
+			std::copy(asteroidMsgsList.begin(), asteroidMsgsList.end(), asteroidsPckt.asteroidDataMsgs.begin());  // Copy list into asteroid data packet vec
 		}
 
 		asteroidsPckt.asteroidDataMsgSize = asteroidsPckt.asteroidDataMsgs.size();	// Keep track of how many elements are in this vec, needed for send/recv
 
-		// ######### ASTEROIDS END #########
+		// ###################################################################### ASTEROIDS END ############################################################
 
-		// ######### PROJECTILES #########
-		// Clear the old data from the lsit and repopulate with latest data
+		// ###################################################################### PROJECTILES ##############################################################
+		// Clear the old data from the lISt and repopulate with latest data
 		projectileMsgsList.clear();
 
 		for (int i = 0; i < projectiles.size(); i++)
@@ -327,25 +386,35 @@ void Level::update(float dt)
 
 		projectilesPckt.projectileDataMsgSize = projectilesPckt.projectileDataMsgs.size();	// Keep track of how many elements are in this vec, needed for send/recv
 
-		// ######### PROJECTILES END #########
+		// ###################################################################### PROJECTILES END ##########################################################
 
 		playerUIpckt.uiData = *uidMsg;
 		playerUIpckt.playerData = *pdMsg;
 
 		// Send ALL data msgs
-		network->send(playerUIpckt, asteroidsPckt, projectilesPckt);
+		network->sendPlayer_UI_Packet(playerUIpckt);
+
+		// Check score here immendiately after we have send the UI (score) data, if we sent -1 as the score
+		// then the game over state should be triggered and no further sends should occur
+		// This will prevent being blocked on the client side waiting for data that will never arrive
+		if (player1->getPlayerScore() < 0)
+		{
+			gameState->setCurrentState(State::GAMEOVER);
+			return;
+			// Transmit that it is game over here, as we will not get another chance as level::update will NOT run next frame
+			//network->sendGameState(int(gameState->getCurrentState()));
+		}
+
+		network->sendAsteroidPacket(asteroidsPckt);
+		network->sendProjectilesPacket(projectilesPckt);
 
 		networkUpdateTimer = 0.0f;
 	}
 
-	//// Check this last after ALL other sends are complete, this should be the final msg sent before moving to GameOver state
-	//if (player1->getPlayerScore() < 0)
-	//{
-	//	gameState->setCurrentState(State::GAMEOVER);
-	//	// Transmit that it is game over here, as we will not get another chance as level::update will NOT run next frame
-	//	network->sendGameState(int(gameState->getCurrentState()));
-	//}
+	// ################################################################### NETWORK UPDATE END ############################################################
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Level::renderAsteroids()
 {
@@ -356,6 +425,8 @@ void Level::renderAsteroids()
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::renderProjectiles()
 {
 	// Draw all the projectiles
@@ -364,6 +435,8 @@ void Level::renderProjectiles()
 		window->draw(*projectiles[i]->getProjectileSprite());
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Level::renderDebugMode()
 {
@@ -384,6 +457,8 @@ void Level::renderDebugMode()
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::render()
 {
 	beginDraw();
@@ -401,15 +476,21 @@ void Level::render()
 	endDraw();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::beginDraw()
 {
 	window->clear(sf::Color::Black);
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::endDraw()
 {
 	window->display();
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Level::loadTexture()
 {
@@ -418,6 +499,8 @@ void Level::loadTexture()
 		std::cout << "Error loading background texture.\n";
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Level::checkCollisions()
 {
@@ -477,6 +560,8 @@ void Level::checkCollisions()
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::createNewAsteroidColBox()
 {
 	// Create a new asteroid collision box
@@ -495,6 +580,8 @@ void Level::createNewAsteroidColBox()
 	asteroidColBoxes[index].setSize(sf::Vector2f(asteroids[index]->getCollisionBox().width, asteroids[index]->getCollisionBox().height));
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void Level::createNewProjectileColBox()
 {
 	// Create a new asteroid collision box
@@ -512,3 +599,5 @@ void Level::createNewProjectileColBox()
 	projectileColBoxes[index].setPosition(sf::Vector2f(projectiles[index]->getCollisionBox().left, projectiles[index]->getCollisionBox().top));
 	projectileColBoxes[index].setSize(sf::Vector2f(projectiles[index]->getCollisionBox().width, projectiles[index]->getCollisionBox().height));
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

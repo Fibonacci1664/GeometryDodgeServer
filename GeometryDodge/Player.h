@@ -1,12 +1,32 @@
+/*
+ * This is the Player class and handles
+ *		- Initialisation of player including:
+ *				*	Loading textures.
+ *				*	Setting up sprite and collision boxes.
+ *		- Handling input.
+ *		- Moving/updating player.
+ *		- Carrying out collision checks with screen bounds.
+ *		- Packing player data into a struct for network data transfer.
+ *
+ * Original @author D. Green.
+ *
+ * © D. Green. 2021.
+ */
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// INCLUDES
 #pragma once
 #include <SFML/Graphics.hpp>
 #include "Input.h"
 #include "NetworkManager.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 class Player : sf::Sprite
 {
 public:
-	Player() {}
+	//Player() {}
 	Player(int playerNum, sf::RenderWindow* hwnd, Input* in);
 	~Player();
 
@@ -34,12 +54,15 @@ private:
 	sf::Vector2f velocity;
 	sf::Vector2u size;
 	sf::FloatRect playerCollisionBox;
+	PlayerDataMsg* playerData;
 
 	int playerNum;
-	float fireButtonSpamTimer = 0.0f;
+	int playerScore;
+
+	float fireButtonSpamTimer;
 	float speed;
 	float normX;
 	float normY;
-	int playerScore = 0;
-	PlayerDataMsg* playerData;
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

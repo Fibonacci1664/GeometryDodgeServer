@@ -1,3 +1,24 @@
+/*
+ * This is the Level class and handles
+ *		- Creating a network manager.
+ *		- Handling rendering of debug collision boxes.
+ *		- Initialising all level components, including:
+ *				*	Background
+ *				*	UI
+ *				*	Player
+ *				*	Asteroids
+ *		- Updating/Spawning level components.
+ *		- Carrying our all collision checks.
+ *		- Sending all game data to the network manager.
+ *
+ * Original @author D. Green.
+ *
+ * © D. Green. 2021.
+ */
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// INCLUDES
 #pragma once
 #include "GameState.h"
 #include "Screen.h"
@@ -12,12 +33,17 @@
 #include "Projectiles_Data_Packet.h"
 #include <list>
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// GLOBALS
 extern bool printDataToConsole;
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Level : public Screen
 {
 public:
-	Level() {}
+	//Level() {}
 	Level(sf::RenderWindow* hwnd, Input* in, GameState* gs);
 	~Level();
 
@@ -26,6 +52,7 @@ public:
 	void render() override;
 
 private:
+	// INIT STUFF
 	void initConnection();
 	void initDebugMode();
 	void initBackground();
@@ -34,25 +61,32 @@ private:
 	void initPlayer();
 	void initAsteroids();
 
+	// UPDATE STUFF
 	void updateAsteroids(float dt);
 	void updateProjectiles(float dt);
 	void updateDebugMode();
 
+	// RENDER STUFF
 	void renderAsteroids();
 	void renderProjectiles();
 	void renderDebugMode();
 
+	// SPAWN STUFF
 	void spawnNewAsteroid();
 	void spawnNewProjectile();
 
+	// CHECK STUFF
 	void checkCollisions();
 	
+	// FOR DEBUG
 	void createNewAsteroidColBox();
 	void createNewProjectileColBox();
 
+	// FOR RENDERING
 	void beginDraw();
 	void endDraw();
 
+	// MISC.
 	void loadTexture();
 
 	UI* ui;
@@ -66,27 +100,27 @@ private:
 	std::vector<sf::RectangleShape> asteroidColBoxes;
 	std::vector<sf::RectangleShape> projectileColBoxes;
 
-	// #### NETWORK STUFF ####
+	// ###################################### NETWORK STUFF ######################################
 	NetworkManager* network;
 	// For sending player data
 	PlayerDataMsg* pdMsg;
 	// For sending UI data
 	UIDataMsg* uidMsg;
-	// For ease of controlling amount of asteroid data
+	// List used for ease of controlling amount of asteroid data using pop
 	std::list<AsteroidDataMsg*> asteroidMsgsList;
 	std::list<ProjectileDataMsg*> projectileMsgsList;
-	// For sending
-	//std::vector<AsteroidDataMsg*> asteroidMsgsVec;
 
 	Player_UI_Data_Packet playerUIpckt;
 	Asteroids_Data_Packet asteroidsPckt;
 	Projectiles_Data_Packet projectilesPckt;
 
-	//int playerScore;
+	// ###################################### NETWORK STUFF END ##################################
+	
+	float networkUpdateTimer;
+	float asteroidSpawnTime;
+	float totalGameTime;
+
 	bool isDebugMode;
-	float networkUpdateTimer = 0.0f;
-	float asteroidSpawnTime = 0.0f;
-	float totalGameTime = 0.0f;
-	bool accept = false;
-	bool firstSend = true;
 };
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

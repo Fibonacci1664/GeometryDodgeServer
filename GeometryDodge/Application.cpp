@@ -1,6 +1,24 @@
+/*
+ * This is the Application class and handles
+ *		- Window creation.
+ *		- Polling window events.
+ *		- The main game loop.
+ *		- Creation, updating and deletion of all Screen objects.
+ *
+ * Original @author D. Green.
+ *
+ * © D. Green. 2021.
+ */
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// INCLUDES
 #include "Application.h"
 #include <iostream>
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// CONSTRUCTOR / DESTRUCTOR
 Application::Application(int width, int height) : windowWidth(width), windowHeight(height)
 {
     initWindow();
@@ -27,6 +45,9 @@ Application::~Application()
     }
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// FUNCTIONS
 void Application::initWindow()
 {
     window.create(sf::VideoMode(windowWidth, windowHeight), "Server Asteroid Dodge!");
@@ -42,6 +63,8 @@ void Application::initWindow()
     // Place the viewing window in the centre of the screen
     window.setPosition(sf::Vector2i((nativeScreenWidth * 0.5f) - (windowWidth * 0.5f), (nativeScreenHeight * 0.5f) - (windowHeight * 0.5f)));
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Application::run()
 {
@@ -90,18 +113,20 @@ void Application::run()
             gameOver = nullptr;
         }
 
-        // Set game back to main menu - TO DO
+        // Set game back to main menu
         gameState.setCurrentState(State::MENU);
         isGameOver = false;
     }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void Application::processWindowEvents()
 {
     // Check all the window's events that were triggered since the last iteration of the loop
     sf::Event event;
     unsigned int n_buts = 0;
-    //window.setJoystickThreshold(2.0f);        // This doesn't do anything, threshold is controlled in Input class
+    //window.setJoystickThreshold(2.0f);        // This didn't seem to do anything, so drift threshold is controlled in Input class
 
     while (window.pollEvent(event))
     {
@@ -116,14 +141,6 @@ void Application::processWindowEvents()
             {
                 window.setView(sf::View(sf::FloatRect(0.f, 0.f, (float)event.size.width, (float)event.size.height)));
                 break;
-            }
-            case sf::Event::LostFocus:
-            {
-                // Pause game if window loses focus
-            }
-            case sf::Event::GainedFocus:
-            {
-                // Resume game when window gains focus again
             }
             case sf::Event::JoystickConnected:
             {
@@ -150,21 +167,14 @@ void Application::processWindowEvents()
             }
             case sf::Event::JoystickMoved:
             {
-                // Need an input class that handles input
                 input.setLeftStick(sf::Joystick::getAxisPosition(0, sf::Joystick::X), sf::Joystick::getAxisPosition(0, sf::Joystick::Y));
             }
             case sf::Event::JoystickButtonPressed:
             {
-                // Check if button 1 (X button) has been pressed on joystick 0, will always return true,
-                // as this event won't fire unlees the button has been pressed, set the input class accordingly for checking
-
                 input.setButtonState(1, sf::Joystick::isButtonPressed(0, 1));
             }
             case sf::Event::JoystickButtonReleased:
             {
-                // Check if button 1 (X button) has been pressed on joystick 0, will always return false,
-                // as this event won't fire unlees the button has been released, set the input class accordingly for checking
-
                 input.setButtonState(1, sf::Joystick::isButtonPressed(0, 1));
             }
             case sf::Event::KeyPressed:
@@ -180,6 +190,8 @@ void Application::processWindowEvents()
         }
     }
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 bool Application::runGameLoop(Level* level, Menu* menu, GameOver* gameOver, float deltaTime)
 {
@@ -219,3 +231,5 @@ bool Application::runGameLoop(Level* level, Menu* menu, GameOver* gameOver, floa
 
     return false;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

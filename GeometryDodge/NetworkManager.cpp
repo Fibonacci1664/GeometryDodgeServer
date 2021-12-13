@@ -1,5 +1,22 @@
+/*
+ * This is the Network Manager class and handles
+ *		- Creating a TCP listener.
+ *		- Accepting connections.
+ *		- Sending all data to all clients using socket selector.
+ *
+ * Original @author D. Green.
+ *
+ * © D. Green. 2021.
+ */
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// INCLUDES
 #include "NetworkManager.h"
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// CONSTRUCTOR / DESTRUCTOR
 NetworkManager::NetworkManager()
 {
 	
@@ -10,6 +27,9 @@ NetworkManager::~NetworkManager()
 
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// FUNCTIONS
 void NetworkManager::createTCPListner()
 {
 	// Bind the listener to a port
@@ -26,6 +46,8 @@ void NetworkManager::createTCPListner()
 	// Add the listener to the selector
 	selector.add(tcpListenerSocket);
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void NetworkManager::acceptConnections()
 {
@@ -57,7 +79,9 @@ void NetworkManager::acceptConnections()
 	}
 }
 
-void NetworkManager::send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Packet asteroidsPckt, Projectiles_Data_Packet projectilesPckt)
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void NetworkManager::sendPlayer_UI_Packet(Player_UI_Data_Packet playerUIpckt)
 {
 	for (auto it = clientSockets.begin(); it != clientSockets.end(); ++it)
 	{
@@ -82,9 +106,9 @@ void NetworkManager::send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Pac
 			std::cout << "Score: " << playerUIpckt.uiData.score << '\n';
 
 			std::cout << "Player " << playerUIpckt.playerData.playerID << '\n'
-						<< "Msg time sent: " << playerUIpckt.playerData.timeSent << '\n'
-						<< "Player X: " << playerUIpckt.playerData.x << '\n'
-						<< "Player Y: " << playerUIpckt.playerData.y << '\n';
+					  << "Msg time sent: " << playerUIpckt.playerData.timeSent << '\n'
+					  << "Player X: " << playerUIpckt.playerData.x << '\n'
+					  << "Player Y: " << playerUIpckt.playerData.y << '\n';
 
 			std::cout << "\n############### PLAYER AND UI DATA END ###############\n";
 
@@ -92,6 +116,16 @@ void NetworkManager::send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Pac
 		}
 
 		// ###################################### PLAYER AND UI STUFF END ###################################
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void NetworkManager::sendAsteroidPacket(Asteroids_Data_Packet asteroidsPckt)
+{
+	for (auto it = clientSockets.begin(); it != clientSockets.end(); ++it)
+	{
+		sf::TcpSocket& client = **it;
 
 		// ###################################### ASTEROID STUFF ############################################
 
@@ -148,6 +182,16 @@ void NetworkManager::send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Pac
 		}
 
 		// ###################################### ASTEROID STUFF END ########################################
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void NetworkManager::sendProjectilesPacket(Projectiles_Data_Packet projectilesPckt)
+{
+	for (auto it = clientSockets.begin(); it != clientSockets.end(); ++it)
+	{
+		sf::TcpSocket& client = **it;
 
 		// ###################################### PROJECTILE STUFF ##########################################
 
@@ -155,7 +199,7 @@ void NetworkManager::send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Pac
 		{
 			std::cout << "\n############### PROJECTILE VECTOR SIZE DATA ###############\n\n";
 		}
-		
+
 		// Send the size of the astroid data msg vector
 		if (client.send(&projectilesPckt.projectileDataMsgSize, sizeof(int)) != sf::Socket::Done)
 		{
@@ -171,7 +215,7 @@ void NetworkManager::send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Pac
 
 			std::cout << "\n############### ALL PROJECTILE DATA ###############\n";
 		}
-			
+
 		if (projectilesPckt.projectileDataMsgs.size() == 0 && printDataToConsole)
 		{
 			std::cout << "\n############### NO PROJECTILE DATA TO SEND ###############\n";
@@ -213,6 +257,9 @@ void NetworkManager::send(Player_UI_Data_Packet playerUIpckt, Asteroids_Data_Pac
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// DO I REALLY NEED THIS????
 void NetworkManager::sendGameState(int gameState)
 {
 	for (auto it = clientSockets.begin(); it != clientSockets.end(); ++it)
@@ -231,3 +278,5 @@ void NetworkManager::sendGameState(int gameState)
 		}
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

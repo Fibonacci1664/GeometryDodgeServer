@@ -3,12 +3,12 @@
  *
  * Original @author D. Green.
  *
- * © D. Green. 2020.
+ * © D. Green. 2021.
  */
 
  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// INCLUDES.
+// INCLUDES
 #pragma once
 #include <SFML\Graphics\RenderWindow.hpp>
 #include <SFML\Graphics\RectangleShape.hpp>
@@ -41,6 +41,4 @@ private:
 	// Default functions for rendering to the screen.
 	void beginDraw();
 	void endDraw();
-
-	void initCursor();
 };
