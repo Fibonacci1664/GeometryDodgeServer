@@ -31,6 +31,7 @@ Level::Level(sf::RenderWindow* hwnd, Input* in, GameState* gs) : Screen(hwnd, in
 	totalGameTime = 0.0f;
 
 	isDebugMode = true;
+	hasCollided = false;
 
 	uidMsg = new UIDataMsg;
 	pdMsg = new PlayerDataMsg;
@@ -324,6 +325,7 @@ void Level::update(float dt)
 
 		// ###################################################################### PLAYER ##################################################################
 		pdMsg = player1->packPlayerData(totalGameTime);
+		pdMsg->collideWithAsteroid = hasCollided;		// Will be 1 or 0 (true or false) This is need for checking on the client side
 		// ###################################################################### PLAYER END ##############################################################
 
 		// ###################################################################### ASTEROIDS ###############################################################
@@ -394,16 +396,19 @@ void Level::update(float dt)
 		// Send ALL data msgs
 		network->sendPlayer_UI_Packet(playerUIpckt);
 
-		// Check score here immendiately after we have send the UI (score) data, if we sent -1 as the score
+		// ################################################################### KNOWN BUG AREA!! ############################################################
+		// Check score or if collided, immediately after we have send the UI (score) data, if we sent -1 as the score
 		// then the game over state should be triggered and no further sends should occur
 		// This will prevent being blocked on the client side waiting for data that will never arrive
-		if (player1->getPlayerScore() < 0)
+		if (player1->getPlayerScore() < 0 || hasCollided)
 		{
 			gameState->setCurrentState(State::GAMEOVER);
-			return;
+			
 			// Transmit that it is game over here, as we will not get another chance as level::update will NOT run next frame
-			//network->sendGameState(int(gameState->getCurrentState()));
+			network->sendGameState(int(gameState->getCurrentState()));
+			//return;
 		}
+		// ################################################################### KNOWN BUG AREA!! END ########################################################
 
 		network->sendAsteroidPacket(asteroidsPckt);
 		network->sendProjectilesPacket(projectilesPckt);
@@ -509,8 +514,7 @@ void Level::checkCollisions()
 	{
 		if (player1->getCollisionBox().intersects(asteroids[i]->getCollisionBox()))
 		{
-			gameState->setCurrentState(State::GAMEOVER);
-			return;
+			hasCollided = true;
 			// Transmit that it is game over here, as we will not get another chance as level::update will NOT run next frame
 			//network->sendGameState(int(gameState->getCurrentState()));
 		}

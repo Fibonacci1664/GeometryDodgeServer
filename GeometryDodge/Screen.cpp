@@ -22,8 +22,6 @@ Screen::Screen(sf::RenderWindow* hwnd, Input* in, GameState* gs)
 	window = hwnd;
 	input = in;
 	gameState = gs;
-
-	//initCursor();
 }
 
 Screen::~Screen()

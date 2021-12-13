@@ -15,6 +15,7 @@ struct PlayerDataMsg
 {
 	// An ID number associated with the corrosponding player
 	int playerID;
+	int collideWithAsteroid;		// int used as bool
 
 	// The positional data of this player
 	float x;

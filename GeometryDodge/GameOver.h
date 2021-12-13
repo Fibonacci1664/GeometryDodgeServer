@@ -1,6 +1,6 @@
 /*
  * This is the GameOver class and handles
- *		- Loading the Menu texture, font, and sprite.
+ *		- Loading the BG texture, font, and sprite.
  *		- Handling rendering of game over text.
  *
  * Original @author D. Green.

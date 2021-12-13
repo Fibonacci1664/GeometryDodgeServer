@@ -259,7 +259,6 @@ void NetworkManager::sendProjectilesPacket(Projectiles_Data_Packet projectilesPc
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-// DO I REALLY NEED THIS????
 void NetworkManager::sendGameState(int gameState)
 {
 	for (auto it = clientSockets.begin(); it != clientSockets.end(); ++it)

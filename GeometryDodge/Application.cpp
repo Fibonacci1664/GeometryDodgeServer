@@ -21,6 +21,8 @@
 // CONSTRUCTOR / DESTRUCTOR
 Application::Application(int width, int height) : windowWidth(width), windowHeight(height)
 {
+    displayGameOverTimer = 0.0f;
+
     initWindow();
 }
 

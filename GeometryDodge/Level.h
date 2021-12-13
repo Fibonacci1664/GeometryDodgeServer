@@ -113,7 +113,6 @@ private:
 	Player_UI_Data_Packet playerUIpckt;
 	Asteroids_Data_Packet asteroidsPckt;
 	Projectiles_Data_Packet projectilesPckt;
-
 	// ###################################### NETWORK STUFF END ##################################
 	
 	float networkUpdateTimer;
@@ -121,6 +120,7 @@ private:
 	float totalGameTime;
 
 	bool isDebugMode;
+	bool hasCollided;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
