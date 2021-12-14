@@ -312,7 +312,7 @@ void Level::update(float dt)
 		asteroidSpawnTime = 0.0f;
 	}
 
-	//checkCollisions();
+	checkCollisions();
 
 	// ################################################################### LOCAL UPDATE END ###############################################################
 
