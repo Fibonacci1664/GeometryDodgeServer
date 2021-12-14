@@ -69,6 +69,9 @@ void NetworkManager::acceptConnections()
 				selector.add(*client);
 
 				std::cout << "A new observer has joined!\n";
+
+				receiveForEcho();
+				sendEcho();
 			}
 			else
 			{
@@ -254,6 +257,48 @@ void NetworkManager::sendProjectilesPacket(Projectiles_Data_Packet projectilesPc
 		}
 
 		// ###################################### PROJECTILE STUFF END ######################################
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void NetworkManager::receiveForEcho()
+{
+	int echoRecv = 0;
+
+	for (auto it = clientSockets.begin(); it != clientSockets.end(); ++it)
+	{
+		sf::TcpSocket& client = **it;
+
+		// Carry out a recv of a msg to echo, this is just a single int
+		if (client.receive(&echoRecv, sizeof(int), received) != sf::Socket::Done)
+		{
+			std::cout << "Server side error receiving echo using TCP!\n";
+			return;
+		}
+
+		std::cout << "Server recvd msgs to echo\n";
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void NetworkManager::sendEcho()
+{
+	// Echo back the value 2
+	int echoValue = 2;
+
+	for (auto it = clientSockets.begin(); it != clientSockets.end(); ++it)
+	{
+		sf::TcpSocket& client = **it;
+
+		if (client.send(&echoValue, sizeof(int)) != sf::Socket::Done)
+		{
+			std::cout << "Error sending Echo from server by TCP!\n";
+			break;
+		}
+
+		std::cout << "Server sent echo msg\n";
 	}
 }
 

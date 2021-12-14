@@ -43,6 +43,10 @@ public:
 	void sendPlayer_UI_Packet(Player_UI_Data_Packet playerUIpckt);
 	void sendAsteroidPacket(Asteroids_Data_Packet asteroidsPckt);
 	void sendProjectilesPacket(Projectiles_Data_Packet projcetilesPckt);
+
+	void receiveForEcho();
+	void sendEcho();
+
 	void sendGameState(int gameState);
 
 private:
