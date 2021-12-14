@@ -402,14 +402,14 @@ void Level::update(float dt)
 		// then the game over state should be triggered and no further sends should occur
 		// This will prevent being blocked on the client side waiting for data that will never arrive
 		 
-		//if (player1->getPlayerScore() < 0 || hasCollided)
-		//{
-		//	gameState->setCurrentState(State::GAMEOVER);
-		//	
-		//	// Transmit that it is game over here, as we will not get another chance as level::update will NOT run next frame
-		//	network->sendGameState(int(gameState->getCurrentState()));
-		//	//return;
-		//}
+		if (player1->getPlayerScore() < 0 || hasCollided)
+		{
+			gameState->setCurrentState(State::GAMEOVER);
+			
+			// Transmit that it is game over here, as we will not get another chance as level::update will NOT run next frame
+			network->sendGameState(int(gameState->getCurrentState()));
+			//return;
+		}
 		
 		// ################################################################### KNOWN BUG AREA!! END ########################################################
 
